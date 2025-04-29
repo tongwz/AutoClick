@@ -26,6 +26,7 @@ public class FloatingView extends FrameLayout implements View.OnClickListener {
     private WindowManager.LayoutParams mParams;
     private FloatingManager mWindowManager;
     private String mCurState;
+
     public FloatingView(Context context) {
         super(context);
         mContext = context.getApplicationContext();
@@ -71,23 +72,31 @@ public class FloatingView extends FrameLayout implements View.OnClickListener {
         mWindowManager.removeView(mView);
     }
 
-    private OnTouchListener mOnTouchListener = new OnTouchListener() {
+    private View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
+        private int initialX;
+        private int initialY;
+        private float initialTouchX;
+        private float initialTouchY;
+
         @Override
         public boolean onTouch(View view, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    mTouchStartX = (int) event.getRawX();
-                    mTouchStartY = (int) event.getRawY();
-                    break;
+                    // 记录按下时视图的位置和触摸点的位置
+                    initialX = mParams.x;
+                    initialY = mParams.y;
+                    initialTouchX = event.getRawX();
+                    initialTouchY = event.getRawY();
+                    return true;
                 case MotionEvent.ACTION_MOVE:
                     if (!AutoService.PLAY.equals(mCurState)) {
-                        mParams.x += (int) event.getRawX() - mTouchStartX;
-                        mParams.y += (int) event.getRawY() - mTouchStartY;//相对于屏幕左上角的位置
+                        mParams.x += initialX + (int) (event.getRawX() - initialTouchX);
+                        mParams.y += initialY + (int) (event.getRawY() - initialTouchY);//相对于屏幕左上角的位置
                         mWindowManager.updateView(mView, mParams);
-                        mTouchStartX = (int) event.getRawX();
-                        mTouchStartY = (int) event.getRawY();
+                        // mTouchStartX = (int) event.getRawX();
+                        // mTouchStartY = (int) event.getRawY();
                     }
-                    break;
+
                 case MotionEvent.ACTION_UP:
                     break;
             }
@@ -98,25 +107,24 @@ public class FloatingView extends FrameLayout implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         Intent intent = new Intent(getContext(), AutoService.class);
-        switch (view.getId()) {
-            case R.id.play:
-                mCurState = AutoService.PLAY;
-                int[] location = new int[2];
-                mView.getLocationOnScreen(location);
-                intent.putExtra(AutoService.ACTION, AutoService.PLAY);
-                intent.putExtra("x", location[0] - 1);
-                intent.putExtra("y", location[1] - 1);
-                break;
-            case R.id.stop:
-                mCurState = AutoService.STOP;
-                intent.putExtra(AutoService.ACTION, AutoService.STOP);
-                break;
-            case R.id.close:
-                intent.putExtra(AutoService.ACTION, AutoService.HIDE);
-                Intent appMain = new Intent(getContext(), MainActivity.class);
-                getContext().startActivity(appMain);
-                break;
+        int id = view.getId();
+        if (id == R.id.play) {
+            mCurState = AutoService.PLAY;
+            int[] location = new int[2];
+            mView.getLocationOnScreen(location);
+            intent.putExtra(AutoService.ACTION, AutoService.PLAY);
+            intent.putExtra("x", location[0] - 1);
+            intent.putExtra("y", location[1] - 1);
+        } else if (id == R.id.stop) {
+            mCurState = AutoService.STOP;
+            intent.putExtra(AutoService.ACTION, AutoService.STOP);
+        } else if (id == R.id.close) {
+
+            intent.putExtra(AutoService.ACTION, AutoService.HIDE);
+            Intent appMain = new Intent(getContext(), MainActivity.class);
+            getContext().startActivity(appMain);
         }
+
         getContext().startService(intent);
     }
 }
