@@ -46,8 +46,8 @@ public class FloatingView extends FrameLayout implements View.OnClickListener {
     public void show() {
         mParams = new WindowManager.LayoutParams();
         mParams.gravity = Gravity.CENTER;
-//        mParams.x = 0;
-//        mParams.y = 300;
+        //        mParams.x = 0;
+        //        mParams.y = 300;
         //总是出现在应用程序窗口之上
         if (Build.VERSION.SDK_INT >= 26) {
             mParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
@@ -56,16 +56,14 @@ public class FloatingView extends FrameLayout implements View.OnClickListener {
         }
         //设置图片格式，效果为背景透明
         mParams.format = PixelFormat.RGBA_8888;
-        mParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR |
-                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
+        mParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
         mParams.width = LayoutParams.WRAP_CONTENT;
         mParams.height = LayoutParams.WRAP_CONTENT;
         boolean result = mWindowManager.addView(mView, mParams);
         Toast.makeText(getContext(), "浮窗显示:" + result, Toast.LENGTH_LONG).show();
         //逐帧动画
-//        AnimationDrawable animationDrawable=(AnimationDrawable)mImageView.getDrawable();
-//        animationDrawable.start();
+        // AnimationDrawable animationDrawable=(AnimationDrawable)mImageView.getDrawable();
+        // animationDrawable.start();
     }
 
     public void hide() {
