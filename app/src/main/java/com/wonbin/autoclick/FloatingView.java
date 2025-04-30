@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -70,7 +71,7 @@ public class FloatingView extends FrameLayout implements View.OnClickListener {
         mWindowManager.removeView(mView);
     }
 
-    private View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
+    private OnTouchListener mOnTouchListener = new OnTouchListener() {
         private int initialX;
         private int initialY;
         private float initialTouchX;
@@ -85,16 +86,16 @@ public class FloatingView extends FrameLayout implements View.OnClickListener {
                     initialY = mParams.y;
                     initialTouchX = event.getRawX();
                     initialTouchY = event.getRawY();
-                    return true;
+                    break;
                 case MotionEvent.ACTION_MOVE:
                     if (!AutoService.PLAY.equals(mCurState)) {
-                        mParams.x += initialX + (int) (event.getRawX() - initialTouchX);
-                        mParams.y += initialY + (int) (event.getRawY() - initialTouchY);//相对于屏幕左上角的位置
+                        mParams.x = initialX + (int) (event.getRawX() - initialTouchX);
+                        mParams.y = initialY + (int) (event.getRawY() - initialTouchY);//相对于屏幕左上角的位置
                         mWindowManager.updateView(mView, mParams);
                         // mTouchStartX = (int) event.getRawX();
                         // mTouchStartY = (int) event.getRawY();
                     }
-
+                    break;
                 case MotionEvent.ACTION_UP:
                     break;
             }
